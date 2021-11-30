@@ -4,11 +4,14 @@
 <head>
   <meta charset="utf-8">
   <title>Gazetteer</title>
+  
   <!-- Font awesome icons -->
   <script src="https://kit.fontawesome.com/6f3003e390.js" crossorigin="anonymous"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <!-- Bootstrap styles -->
   <link rel="stylesheet" type="text/css" href="vendors/bootstrap/css/bootstrap.min.css">
+  
   <!-- leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -16,7 +19,20 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
+
+    <!-- Easy Button -->
   <script src="./vendors/easy-button/easy-button.js"></script>
+    <!-- Easy Button -->
+    
+
+  <!-- Marker Cluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  
+
+
+ 
 
   <!-- css styles -->
   <link rel="stylesheet" href="css/style.css">
@@ -49,62 +65,30 @@
             <div class="w-sm-100 weather-display">
               <div class="container carousel-container px-0">
 
+                <div class="custom-carousel-buttons">
+                  <div class='slider-buttons'>
+
+                    <button type="button" id='btn-weather-slide' data-bs-target="#carouselExampleInterval"
+                      data-bs-slide-to="0" class="btn btn-sm btn-outline-light" aria-current="true"
+                      aria-label="Slide 1"><img class='img-34' src="./images/weather-select.png" alt="weather select">
+
+                    </button>
+                    <button class='btn btn-sm btn-outline-light' type="button" id='btn-facts-slide'
+                      data-bs-target="#carouselExampleInterval" data-bs-slide-to="1" aria-label="Slide 2"><img class='img-34' src="./images/info-select.png" alt="info select">
+                    </button>
+                    <button class='btn btn-sm btn-outline-light' type="button" id='btn-geo-slide'
+                      data-bs-target="#carouselExampleInterval" data-bs-slide-to="2" aria-label="Slide 3"><img class='img-34' src="./images/news-select.png" alt="news select">
+
+                    </button>
+                  </div>
+                </div>
                 <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
                   <div class="carousel-inner">
 
                     <!-- Local weather display area -->
                     <div class="carousel-item active" data-bs-interval="10000">
-                      <div class="card modal-card" id='local-weather-card'>
-                        <div class="card-body p-0">
-
-                          <div class="container weather-box">
-
-                            <div class="row d-flex justify-content-center align-items-center">
-
-                              <h1 class='col-sm-5' id='local-weather-temp'>&deg;C</h1>
-
-                              <div class='col-sm-7' id="weather-icon">
-
-                                <img src="./images/weather/64x64/night/116.png" alt="default image">
-                              </div>
-
-
-                            </div>
-                            <h3 id='local-weather-condition'>Partly Cloudy</h3>
-                          </div>
-                          <div class="container barometer p-0" id='local-weather-info'>
-                            <ul class="list-group list-group-flush b-1">
-                              <li class="list-group-item d-flex  ">
-
-                                <h6 class='col'>Humidity</h6>
-
-                                <p class="col" id='local-weather-humidity'>
-                                  %
-                                </p>
-                              </li>
-                              <li class="list-group-item d-flex  ">
-
-
-                                <h6 class='col'>Wind Speed</h6>
-
-                                <p class="col" id='local-weather-wind'>
-                                  Knots
-                                </p>
-
-                              </li>
-                              <li class="list-group-item d-flex  ">
-
-
-                                <h6 class='col'>Rain</h6>
-
-                                <p class="col" id='local-weather-rain'>
-                                  mm
-                                </p>
-
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
+                      <div class="card modal-card mw-75 rounded-3" id='local-weather-card'>
+                       <!-- Dynamic card information for local weather to be inserted here -->
                       </div>
 
 
@@ -114,54 +98,8 @@
 
                     <!-- Local city info display area -->
                     <div class="carousel-item" data-bs-interval="10000" data-bs-touch='true'>
-                      <div class="card modal-card" id='local-city-info-card'>
-                        <div class="card-body p-0">
-
-                          <div class="container weather-box">
-
-                            <div class="row">
-
-                              <h1 class='col-sm-12' id='local-area'>Area</h1>
-
-
-
-
-                            </div>
-                            <h3 id='local-territory'>Territory</h3>
-                          </div>
-                          <div class="container barometer p-0" id='local-stats-container'>
-                            <ul class="list-group list-group-flush b-1">
-                              <li class="list-group-item d-flex  ">
-
-
-                                <h6 class='col'>Country</h6>
-
-                                <p class="col" id='local-country'>
-                                  country name
-                                </p>
-
-                              </li>
-                              <li class="list-group-item d-flex  ">
-
-                                <h6 class='col'>Population</h6>
-
-                                <p class="col" id='local-population'>
-                                  population number
-                                </p>
-
-                              </li>
-                              <li class="list-group-item d-flex  ">
-
-
-
-                                <p class='col-lg w-100 text-start' id='local-city-summary'>
-                                  city summary
-                                </p>
-
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
+                      <div class="card modal-card mw-75 rounded-3" id='local-city-info-card'>
+                        <!-- Dynamic card information for local town/city information to be inserted here -->
                       </div>
 
 
@@ -173,55 +111,8 @@
 
                     <!-- Local point of interest info display area -->
                     <div class="carousel-item" data-bs-interval="10000">
-                      <div class="card modal-card">
-                        <div class="card-body p-0">
-
-                          <div class="container weather-box">
-
-                            <div class="row">
-
-                              <h1 class='col-sm-5'>&deg;C</h1>
-
-
-
-                            </div>
-                            <h3 id='local-weather-condition'>Partly Cloudy</h3>
-                          </div>
-                          <div class="container barometer p-0">
-                            <ul class="list-group list-group-flush b-1">
-                              <li class="list-group-item d-flex  ">
-
-
-                                <h6 class='col'>Humidity</h6>
-
-                                <p class="col">
-                                  %
-                                </p>
-
-                              </li>
-                              <li class="list-group-item d-flex  ">
-
-
-                                <h6 class='col'>Wind Speed</h6>
-
-                                <p class="col">
-                                  Knots
-                                </p>
-
-                              </li>
-                              <li class="list-group-item d-flex  ">
-
-
-                                <h6 class='col'>Rain</h6>
-
-                                <p class="col">
-                                  mm
-                                </p>
-
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
+                      <div class="card modal-card rounded-3" id='local-news-info-card'>
+                       <!-- Dynamic card information that displays local news depending on location -->
                       </div>
 
 
@@ -243,36 +134,24 @@
           <!-- Dynamic local weather display -->
 
           <div class="col-md-4 offset-md-2 py-3">
-            <h4 class="text-white">Find <i class="fas fa-search"></i></h4>
+            <h4 class="text-white">Find <img src="./images/search-select.png" alt="search" class='img-34'></h4>
             <div class="input-group mt-3 mb-3" id='filter-dropdowns'>
 
-              <!-- Dropdown to indicate a selection of map views -->
-              <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
-                Display
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Link 1</a></li>
-                <li><a class="dropdown-item" href="#">Link 2</a></li>
-                <li><a class="dropdown-item" href="#">Link 3</a></li>
-              </ul>
+          
               <!-- Dropdown to indicate a selection of map views -->
 
               <!-- Dropdown to indicate countries to select -->
-              <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
-                Country
-              </button>
-              <select class="dropdown-menu" id='country-select'>
-
+              <select class="form-select form-control" aria-label="Default select example" id='country-select'>
               </select>
               <!-- Dropdown to indicate countries to select -->
 
             </div>
 
             <!-- Search bar -->
-            <div class="d-flex">
-              <input type="text" class="form-control" placeholder="Explore...">
-              <button id='searchBtn'><i class="fas fa-search"></i></button>
-            </div>
+            <form class="d-flex" id='poiSearchForm' autocomplete="off">
+              <input type="text" class="form-control" placeholder="Explore places of interest..." id='searchQuery' name='searchQuery' spellcheck="false">
+              <button id='searchBtn' type='submit'><img src="./images/search-select.png" alt="search"  class='img-34'></button>
+            </form>
             <!-- Search bar -->
 
             <!-- Contact links -->
@@ -294,14 +173,78 @@
 
   </div>
   <div class="main">
-    <div id="map"></div>
+    <div id="map">
+    
+    </div>
   </div>
   <div id="preloader">
   </div>
 
+  <!-- Off canvas country information toggle -->
+  <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+    <div class="offcanvas-header">
+      <h4 class="countryName offcanvas-title text-white" id="offcanvasScrollingLabel">
+        Country
+      </h4>
+      <button type="button" class="btn-close text-reset btn-outline-light" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Weather in Country
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body" id='country-weather-display'>
+              <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              information on Country
+            </button>
+          </h2>
+          <div id="collapseTwo" class="bg=none accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body p-0" id='country-info-display'>
+              <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              News Headlines
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+            <div class="accordion-body" id='country-news-display'>
+              <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Off canvas poi information toggle -->
+  <div class="text-white offcanvas offcanvas-end rounded-0" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header" id='poi-type-header'>
+      <h5 id="offcanvasRightLabel">Offcanvas right</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body w-100 h-auto p-0 poi-background-img bg-img border-none poi-details">
+      ...
+    </div>
+  </div>
 
   <script src="./vendors/jquery/jquery-3.6.0.min.js"></script>
   <script src="./vendors/bootstrap/js/bootstrap.bundle.js"></script>
+ 
+
   <script type="module" src="js\script.js"></script>
 </body>
 
