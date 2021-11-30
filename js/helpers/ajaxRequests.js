@@ -20,6 +20,16 @@ function displayCountries() {
     });
 }
 
+function getCountryGeoJson() {
+    var url = "libs/php/countryGeoJson.php";
+    return $.ajax({
+        cache: false,
+        url: url,
+        dataType: "json",
+        type: "get",
+    });
+}
+
 function findCityInfo(param1, param2) {
     var url = "libs/php/cityInfo.php";
     return $.ajax({
@@ -76,4 +86,4 @@ function POISearch(searchQuery) {
     });
 }
 
-export {weatherSearch, displayCountries, findCityInfo, findWiki, findCityNews, getCoords, POISearch};
+export {weatherSearch, displayCountries,getCountryGeoJson, findCityInfo, findWiki, findCityNews, getCoords, POISearch};

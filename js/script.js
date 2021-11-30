@@ -1,4 +1,4 @@
-import {weatherSearch, displayCountries, findCityInfo, findWiki, findCityNews, getCoords, POISearch} from "./helpers/ajaxRequests.js";
+import {weatherSearch, displayCountries, getCountryGeoJson,findCityInfo, findWiki, findCityNews, getCoords, POISearch} from "./helpers/ajaxRequests.js";
 import {weatherInfo} from './helpers/weather.js';
 import {areaInfo} from './helpers/areaInfo.js';
 import {countryInfo} from './helpers/countryInfo.js';
@@ -38,38 +38,9 @@ function resetLocal() {
     
 }
 
-// function iconReset() {
-//     for (let i=0;i<markerList.length;i++) {
-        
-//         if(markerList.length > 0){
-//             map.removeLayer(markerList[i]);
-//             markerList.pop();
-//             map.removeLayer(markers);
-//             localLocations.pop();
-//             // Initialise map // 
-           
-//         }
-                
-//     }
-    
-    
-// }
 
 
 
-// this function is to remove markers once a new filter is selected
-// Currently unsure what to do with this because it isnt working
-// function removeMarkers() {
-    
-//     for (let i=0;i<markerList.length;i++) {
-        
-//         map.removeLayer(markerList[i]);
-        
-//     }
-    
-//     markerList=[];
-    
-// }
 
 
 // Initialise map // 
@@ -110,49 +81,6 @@ $('.carousel').on('touchstart', function (event) {
 
 
 
-// Updates the displayed map markers to reflect the crossfilter dimension passed in
-// var updateMap = function (locs, poi) {
-    
-    
-//     var minlat = 200, minlon = 200, maxlat = -200, maxlon = -200;
-    
-//     locs.forEach(function (d, i) {
-        
-//         if (d.latitude != null && d.latitude != undefined) {
-            
-//             // find corners
-//             if (minlat > d.latitude) minlat = d.latitude;
-//             if (minlon > d.longitude) minlon = d.longitude;
-//             if (maxlat < d.latitude) maxlat = d.latitude;
-//             if (maxlon < d.longitude) maxlon = d.longitude;
-            
-            
-//             customIcon = L.icon({
-//                 iconUrl: `./images/POI/${poi}.png`,
-                
-//                 iconSize:     [50, 60], // size of the icon
-//                 iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-//                 popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-//             });
-//             // set markers
-//          var customMarker = L.marker([d.latitude, d.longitude], {icon: customIcon}).addTo(map).bindPopup(poiInfo);
-//          markerList.push(customMarker);
-//          markers.addLayer(customMarker);
-//          map.addLayer(markers);
-     
-//         }
-//     });
-
-
-    
-// //     // correct zoom to fit markers
-//     setTimeout(function () {
-        
-//         map.setZoom(map.getZoom() - 1);
-//     }, 500);
-
-// };
-
 
 $(window).on('load', function () {
     if ($('#preloader').length) {
@@ -174,40 +102,7 @@ $(window).on('load', function () {
     
     L.marker([55.73333, -3.96667], {icon: homeIcon}).addTo(map).bindPopup("Welcome Home!");
     
-    
-    
 
-    
-    
-    
-    
-    
-    // diaplay poi near home, i want to change this to color depending onn data like temp etc
-    $('#filter-select').change(function(e) {
-     
-        
-    // POISearch(55.73333, -3.96667, e.target.value).done(function (res) {
-    //     let cityData = res.data.getPlaces;
-    //     cityData.forEach((poi, index) => {
-            
-    //         localLocations.push({ latitude: poi.lat, longitude: poi.lng })
-    //     });
-        
-      
-
-        
-
-    //         let val = e.target.value.toLowerCase();
-    //         updateMap(localLocations, val, `hello I am ${val} lover`)
-
-    //         $('#navbarHeader').attr('class', 'collapse');
-            
-            
-            
-    //         iconReset()
-          
-    //     })
-    })
         
     
     
@@ -324,21 +219,28 @@ $(window).on('load', function () {
 
     displayCountries().done(function (res) {
         if (res.status.name == "ok") {
+        str = `<option value="" disabled selected hidden>Select your option</option>`;
         for (let i = 0; i < res.data.length; i++) {
-            str += `<option class="dropdown-item" value=${res.data[i].properties.iso_a2} name=${res.data[i].properties.iso_a2}>${res.data[i].properties.name}</option>`;
+        
+            str += `
+            <option class="dropdown-item" value=${res.data[i].iso_a2} name=${res.data[i].iso_a2}>${res.data[i].name}</option>`;
         }
     }
     
     $('#country-select').html(str);
 
     
-    $('#country-select').change(function (e) {
+  })
+
+
+  $('#country-select').change(function (e) {
        
+
+    getCountryGeoJson().done(function (res){
         for (let i = 0; i < res.data.length; i++) {
+        
             if (e.target.value === res.data[i].properties.iso_a2) {
-              
-                
-                
+             
                 var geoJsonLayer = L.geoJson(res.data[i], {
                     onEachFeature: function (feature, layer) {
                         layer.bindPopup(feature.properties.name);
@@ -348,15 +250,13 @@ $(window).on('load', function () {
                 map.addLayer(markers);
                   map.fitBounds(markers.getBounds());
                   
-
+    
                   // collapse navbar on change so that users have a
                 $('#navbarHeader').attr('class', 'collapse');
                 
                 // This will get info on a country, but most importantly give us lat and lng from a country name input
-                getCoords(e.target.value).done(function (coords) {
-                    
-                    console.log(coords)        
-
+                getCoords(e.target.value).done(function (coords) {      
+    
                 
                        //Getting local weather in real time that displays in nav
                 weatherSearch(coords.lat, coords.lng)
@@ -387,7 +287,7 @@ $(window).on('load', function () {
                                 // Display country information on an offcanvas modal   
                                 findCityInfo(coords.lat, coords.lng).done(function(info){
                                     $('#country-info-display').html(countryInfo(info.territory.toLowerCase(),coords.cca2, coords.country, coords.capital, coords.pop, coords.area).cardHtml);
-
+    
                                 })
                                     
                                     
@@ -396,11 +296,9 @@ $(window).on('load', function () {
                                     
                                 
                                 
-                                findCityNews(coords.cca2).done(function (cityNewsRes) {
-                        console.log(cityNewsRes);
-                    
+                                findCityNews(coords.cca2).done(function (cityNewsRes) {             
                         $('#country-news-display').html(globalNews('Foreign News').cardHtml);
-
+    
                         for (let i = 1; i < cityNewsRes.articles.length; i++) {
                             
                           
@@ -431,69 +329,51 @@ $(window).on('load', function () {
                                 `
                             }
                             
-
+    
                             globalNewsArticles.push(str)
-
+    
                             $('.global-news-results ul').html(globalNewsArticles);
                         }
-
+    
                        
                         resetGlobal();
-
+    
                         
                     })     
                             
                         }
                   
-
+    
                     L.marker([coords.lat, coords.lng]).addTo(map)
                     .bindPopup('hello').on('click', function(){
                          bsOffcanvas.show();
                     });
-                    // diaplay poi near home
-                    // POISearch(coords.lat, coords.lng, 'NATURE').done(function (res) {
-
-
-                    //     let cityData = res.data.getPlaces;
-        
-                    //     cityData.forEach((poi, index) => {
-
-                    //         worldLocations.push({ latitude: poi.lat, longitude: poi.lng })
-                    //     });
-
-                    //     // str = createModal();
-
-                    //     // $('#myModal .modal-body').html(str);
-                                            
-                        
-
-
-
-                    //     // updateMap(worldLocations, 'nature');
-
-                    // })
-
-
+    
                 })
-
-
+    
+    
             })
         
-
-
+    
+    
         setTimeout(function(){bsOffcanvas.show()}, 1000);
         
-        }}})})
+        }}})
+    })
+    
 
 
     $('#poiSearchForm').submit(function(e){
         
         e.preventDefault();
 
+
+
+      
+
+        // This all of a sudden isnt working
         POISearch(Array.from(e.target.children)[0].value.split(' ').join('%20') + '%20').done(function(searchRes){
-            console.log(searchRes)
             findWiki(searchRes.results[0].location.lat, searchRes.results[0].location.lng).done(function(wikiRes){
-                console.log(wikiRes)
                 let customIcon = L.icon({
                     iconUrl: `./images/poi/searched-icons/selection.png`,
                     
@@ -501,24 +381,93 @@ $(window).on('load', function () {
                     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
                 popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
             });
-            let poiInput = POIInfo(searchRes.results[0].name, searchRes.results[0].address,searchRes.results[0].phone_number, searchRes.results[0].website, wikiRes);
+            let poiInput = POIInfo(searchRes.results[0].name, searchRes.results[0].address, searchRes.results[0].phone_number,searchRes.results[0].website, wikiRes);
             $('#poi-type-header h5').html(searchRes.results[0].types[0]);
             $('.poi-details').html(poiInput.html)
-            $('.nearby-place-container').css(poiInput.customCSS)
-            let customMarker = L.marker([searchRes.results[0].location.lat, searchRes.results[0].location.lng], {icon: customIcon});
-            customMarker.addTo(map);
-            map.setView([searchRes.results[0].location.lat, searchRes.results[0].location.lng], 13);
+            map.setView([searchRes.results[0].location.lat, searchRes.results[0].location.lng], 17);
+            let customMarker = L.marker([searchRes.results[0].location.lat, searchRes.results[0].location.lng], {icon: customIcon}).addTo(map)
+        
+        
+            wikiRes.forEach(res => {
+        
+                let popupContent = `
+                <div class='rounded-3 bg-glass m-2'>
+                <h4 class='text-center'>${res.title}</h4>
+            
+                <div class="row m-auto">
+            
+            
+                <h6 class='col text-start p-3 m-0'>Rank</h6>
+            
+                <p class="col text-end">
+                  ${res.rank}
+                </p>
+            
+              </div>
+              
+              <div class="row m-auto">
+            
+            
+              <h6 class='col text-start p-3 m-0'>Distance</h6>
+            
+              <p class="col text-end">
+                ${res.distance}km
+              </p>
+            
+            </div>
+              
+            
+            <p class='p-3 m-0'>${res.summary}<a href="http://${res.wikipediaUrl}" target='_blank' class='text-primary d-inline-block mx-2'>Find out more...</a></p>
+            
+        
+            
+            </div>`
+                if(!res.feature){
+                    
+                    $(`#${res.rank}`).click(function(){
+                        map.setView([res.lat, res.lng], 19);
+                        poiBsOffcanvas.hide();
+                    })
+        
+                    L.marker([res.lat, res.lng], {icon:  L.icon({
+                        iconUrl: `./images/poi/nearby-icons/default.png`,
+                        
+                        iconSize:     [60, 60], // size of the icon
+                        iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                })}).bindPopup(popupContent).addTo(map);
+                        
+        
+                        $('.nearby-place-container').css({
+                            'background-image': `url("./images/poi/nearby-background/default.jpg")`
+                        })
+                    }
+        
+                    L.marker([res.lat, res.lng], {icon:  L.icon({
+                        iconUrl: `./images/poi/nearby-icons/${res.feature}.png`,
+                        
+                        iconSize:     [60, 60], // size of the icon
+                        iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                })}).bindPopup(popupContent).addTo(map);
+                $('.nearby-place-container').css({
+                    'background-image': `url(./images/poi/nearby-background/${res.feature}.jpg)`
+                })
+        
+                $(`#${res.rank}`).click(function(){
+                    map.setView([res.lat, res.lng], 19);
+                    poiBsOffcanvas.hide();
+                })
+                    });
             // collapse navbar on change so that users have a
             $('#navbarHeader').attr('class', 'collapse');
-            poiInput.markers.addTo(map);
-            map.addLayer(poiInput.markers);
             poiBsOffcanvas.show()
             customMarker.on('click',function(){
                 
                 poiBsOffcanvas.show();
             })
-
-            
+        
+        
             
         })
         })
